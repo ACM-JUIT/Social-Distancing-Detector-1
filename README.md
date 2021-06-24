@@ -5,4 +5,4 @@
 
 Implement social distancing detector using OpenCV(Python), Deep Learning. It should monitor social distancing in Real-Time using live video stream/IP camera in OpenCV.
 
-This is going to be legen- wait for it - darry.
+# This is going to be LEGEN- wait for it -DARY.
