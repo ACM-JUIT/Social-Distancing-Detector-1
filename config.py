@@ -1,3 +1,3 @@
-Modelconfig="yolo-coco/yolov4-tiny.cfg"
-Modelweights="yolo-coco/yolov4-tiny.weights"
-Modelclasses="yolo-coco/coco.names"
+Modelconfig="yolov4/yolov4-tiny.cfg"
+Modelweights="yolov4/yolov4-tiny.weights"
+Modelclasses="yolov4/coco.names"
