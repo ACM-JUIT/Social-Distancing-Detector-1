@@ -1,9 +1,9 @@
 # importing libraries and required files
 import cv2
 import numpy as np
-from config import *
-from boundingboxes import *
-from detect import *
+from stuff.config import *
+from stuff.boundingboxes import *
+from stuff.detect import *
 
 #Loading YOLOv4-tiny configuration file and weights 
 #Initializing network
@@ -39,7 +39,7 @@ modheight = int(originalheight * ratio)
 
 # Read until video is completed
 while True:
-  
+
   # Capture frame-by-frame
   cap,frame = videostream.read()
 
