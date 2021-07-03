@@ -7,7 +7,7 @@ def bboxes(results,classes,frame):
     #loop over the results
     for (index,(classid,prob,bbox,centeriod)) in enumerate(results):
         #extract the bounding box and centroid coordinates 
-        (startx,starty,endx,endy) =bbox
+        (startx,starty,endx,endy) = bbox
         #setup the color of the annotation
         color=(0,255,0)
         #grabbing the centroid 

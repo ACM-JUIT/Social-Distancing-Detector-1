@@ -33,10 +33,6 @@ videostream = cv2.VideoCapture(0)
 originalheight = videostream.get(4)
 originalwidth = videostream.get(3)
 
-#Calculate modified height in ratio with 800 pixels
-ratio = modwidth / float(originalwidth)
-modheight = int(originalheight * ratio)
-
 # Read until video is completed
 while True:
 
@@ -44,7 +40,7 @@ while True:
   cap,frame = videostream.read()
 
   #Grabs results after sending it into the network
-  results = detect(net,frame,modwidth,modheight,outputlayers)
+  results = detect(frame,net,outputlayers,originalheight,originalwidth)
   
   #Draws bounding boxes on each frame 
   frame = bboxes(results,classes,frame)
