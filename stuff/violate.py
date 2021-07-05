@@ -1,28 +1,27 @@
 import math
 
-def distance(p1,p2):
-    distance = math.sqrt(math.pow(p2[0]-p1[0]),2)+math.pow(p2[1]-p1[1])
+def distance(point1,point2):
+    distance = math.sqrt(math.pow(point2[0]-point1[0],2)+math.pow(point2[1]-point1[1],2))
     return int(distance)
 
-def distance_violate(results):
+def breachsocialdistance(final,violatedistance=75):
 
-    if len(results) >=2:
-        centroid=[r[3] for r in results]
-    
-    outcome =[]
-    for i in centroid:
-        cen=[]
-        for j in centroid:
-            cen.append(distance(i,j))
-        outcome.append(cen)
-    violations=set()
+    centroids = [r[3] for r in final]
+    n = len(centroids)
+    rows,cols= (n,n)
+    results = []
+    for i in centroids:
+        col = []
+        for j in centroids:
+            col.append(distance(i,j))
+        results.append(col)
 
-    for i in range(0,len(outcome)-1):
-        for j in range(i,len(outcome)-1):
+    violates = set()
 
-            if outcome[i][j]<75:
-                violations.add(i)
-                violations.add(j)
+    for i in range(0,len(results)):
+        for j in range(i + 1 ,len(results)):
+            if results[i][j] < violatedistance:
+                violates.add(i)
+                violates.add(j)
 
-    return violations
-        
+    return violates

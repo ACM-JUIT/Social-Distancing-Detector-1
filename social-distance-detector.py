@@ -4,6 +4,7 @@ import numpy as np
 from stuff.config import *
 from stuff.boundingboxes import *
 from stuff.detect import *
+from stuff.violate import *
 
 #Loading YOLOv4-tiny configuration file and weights 
 #Initializing network
@@ -42,8 +43,11 @@ while True:
   #Grabs results after sending it into the network
   results = detect(frame,net,outputlayers,originalheight,originalwidth)
   
+  #acquires the results of violations in distance 
+  violations=breachsocialdistance(results)
+
   #Draws bounding boxes on each frame 
-  frame = bboxes(results,classes,frame)
+  frame = bboxes(results,classes,frame,violations)
  
   # Display the resulting frame
   cv2.imshow('Frame', frame)
