@@ -1,27 +1,47 @@
 import math
 
-def distance(point1,point2):
-    distance = math.sqrt(math.pow(point2[0]-point1[0],2)+math.pow(point2[1]-point1[1],2))
+#To find to euclidean distance between two centroids
+def distance(p1,p2):
+
+    distance = math.sqrt(math.pow(p2[0]-p1[0],2)+math.pow(p2[1]-p1[1],2))
+    #Returns distance  between two objects in pixels
     return int(distance)
 
-def breachsocialdistance(final,violatedistance=75):
 
-    centroids = [r[3] for r in final]
-    n = len(centroids)
-    rows,cols= (n,n)
-    results = []
-    for i in centroids:
-        col = []
-        for j in centroids:
-            col.append(distance(i,j))
-        results.append(col)
+def breachsocialdistance(results):
 
-    violates = set()
+    #Makes a seperate list of all centroids of detected objects
+    centroid = [r[3] for r in results]
+    
+    #Intializing a list to store the indexes of violating objects
+    outcome = []
 
-    for i in range(0,len(results)):
-        for j in range(i + 1 ,len(results)):
-            if results[i][j] < violatedistance:
-                violates.add(i)
-                violates.add(j)
+    #Loop over each centroid
+    for i in centroid:
+        
+        #Make a layer for each centroid
+        cen = []
 
-    return violates
+        #To compare each centroid with the others
+        for j in centroid:
+            
+            #Appends the distance of each centroid with the others
+            cen.append(distance(i,j))
+        
+        #Stores each each to form a Distance matrix
+        outcome.append(cen)
+    
+    #Initialize a set to store Non repeating indexes of the violating objects
+    violations = set()
+
+    #loop through each element in the outcome distance matrix
+    for i in range(0,len(outcome)):
+        for j in range(i+1,len(outcome)):
+
+            #Checks if the distance in pixels is lesser than the safe distance
+            if outcome[i][j]<75:
+                violations.add(i)
+                violations.add(j)
+
+    return violations
+        
