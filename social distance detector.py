@@ -84,9 +84,18 @@ root.configure(bg = "black")
 frame1 = Frame(root, background = colors[2])
 headline = Label(frame1, text = "Social Distance Detector", font = ("times new roman", 28, "bold"), bg = "black", fg = "white", relief = RIDGE)
 
+# Adding the Logo Image
+image = Image.open("stuff/detector.png")
+resize_image = image.resize((384, 216))
+photo = ImageTk.PhotoImage(resize_image)
+photo_label = Label (image=photo)
+
 #Packing the Social Distance Title Frame
 frame1.pack(padx = 10 , pady = 10)
 headline.pack(padx = 1.5, pady = 3)
+
+# Packing the Logo Label
+photo_label.pack(padx = 10 , pady = 10)
 
 #Setting panel for webcam feed
 webcampanel = Label(root,bg = colors[1]) 
@@ -111,6 +120,7 @@ def starteverything():
     frame2.pack(padx = 2 , pady = 10)
     videoloop()
     startwebcambutton.pack_forget()
+    photo_label.pack_forget()
 
 #Button to start the program
 startwebcambutton = Button(root, text = "Start Webcam", font = ("Bahnschrift", 15, "bold"), activebackground = colors[4], activeforeground = "black", bg = "grey", fg = "black", relief = RAISED,command = lambda : starteverything())
