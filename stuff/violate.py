@@ -8,7 +8,7 @@ def distance(p1,p2):
     return int(distance)
 
 
-def breachsocialdistance(results):
+def breachsocialdistance(results,violatedistance=75):
 
     #Makes a seperate list of all centroids of detected objects
     centroid = [r[3] for r in results]
@@ -39,7 +39,7 @@ def breachsocialdistance(results):
         for j in range(i+1,len(outcome)):
 
             #Checks if the distance in pixels is lesser than the safe distance
-            if outcome[i][j]<75:
+            if outcome[i][j]<violatedistance:
                 violations.add(i)
                 violations.add(j)
 

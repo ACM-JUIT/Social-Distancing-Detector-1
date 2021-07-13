@@ -2,13 +2,32 @@ from tkinter import *
 import cv2
 from PIL import Image, ImageTk
 import numpy as np
+from stuff.violate import breachsocialdistance
+from stuff.boundingboxes import bboxes
+from stuff.detect import detect
+from stuff.config import *
+from stuff.savelog import addtolog
+import time
+from playsound import playsound
 
 def videoloop():
     #Read each frame from the webcam
-    success, img = webcam.read()  
+    success, frame = webcam.read()  
     
     if success:
-               
+        #Grabs results after sending it into the network
+        results = detect(frame,net,outputlayers,height,width)
+        
+        #acquires the results of violations in distance 
+        violates = breachsocialdistance(results,scale.get())
+        
+        #If violates is more than 2 it plays an alert audio
+        if len(violates) > 0: 
+            alert(len(violates))
+        
+        #Draws bounding boxes on each frame
+        img = bboxes(results,classes,frame,violates)
+        
         #Converting Image from BGR to RGBA
         cv2image = cv2.cvtColor(img, cv2.COLOR_BGR2RGBA)  
         
@@ -25,7 +44,31 @@ def videoloop():
         #Loops the frame after one millisecond
         root.after(1, videoloop)
 
+#Loading YOLOv4-tiny configuration file and weights 
+#Initializing network
+net = cv2.dnn.readNetFromDarknet(Modelconfig,Modelweights)
+
+#Storing Label Names of each object in coco dataset
+classes = []
+with open(Modelclasses,"r") as file:
+    classes=[eachline.strip() for eachline in file.readlines()]
+
+#Setting backend as OpenCV
+net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+
+#Setting target processor as CPU
+net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+
+#Grabbing Layer Names from the Network
+layernames = net.getLayerNames()
+
+#Grabbing Output Layer Names from the Network
+outputlayers = [layernames[index[0]-1] for index in net.getUnconnectedOutLayers()]
+
+# Create a VideoCapture object and read from webcam
 webcam = cv2.VideoCapture(0)
+
+#Get original height and width of videostream
 width = webcam.get(3)
 height = webcam.get(4)
 
@@ -72,6 +115,19 @@ def starteverything():
 #Button to start the program
 startwebcambutton = Button(root, text = "Start Webcam", font = ("Bahnschrift", 15, "bold"), activebackground = colors[4], activeforeground = "black", bg = "grey", fg = "black", relief = RAISED,command = lambda : starteverything())
 startwebcambutton.pack(padx=10, pady=10)
+
+disable_time = 10
+
+#Alert Audio function that plays an alert audio after every 10 seconds in case of continuous violation
+def alert(violations,stamp = [time.time() - disable_time]):
+    if time.time() - stamp[0] <= disable_time:
+        return
+    #Plays alert audio
+    playsound('stuff/alertaudio.mp3',block=False)
+
+    #Adds Log to file violationlog.csv
+    addtolog(violations)
+    stamp[0] = time.time()
 
 #Running our app loop
 root.mainloop()
