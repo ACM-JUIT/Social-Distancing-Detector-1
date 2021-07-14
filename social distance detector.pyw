@@ -84,7 +84,7 @@ while True:
   if args["output"] != "" and writer is None:
 		# initialize our video writer
 	  fourcc = cv2.VideoWriter_fourcc(*"MJPG")
-	  writer = cv2.VideoWriter("resources/videos/output/"+args["output"], fourcc, 20,
+	  writer = cv2.VideoWriter("resources/videos/output/"+args["output"], fourcc, 25,
 			(frame.shape[1], frame.shape[0]), True)
 	# if the video writer is not None, write the frame to the output
 	# video file
