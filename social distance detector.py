@@ -1,48 +1,19 @@
-from tkinter import *
+# importing libraries and required files
 import cv2
-from PIL import Image, ImageTk
 import numpy as np
-from stuff.violate import breachsocialdistance
-from stuff.boundingboxes import bboxes
-from stuff.detect import detect
-from stuff.config import *
-from stuff.savelog import addtolog
-import time
-from playsound import playsound
+import argparse
+from resources.config import *
+from resources.boundingboxes import *
+from resources.detect import *
+from resources.violate import *
 
-def videoloop():
-    #Read each frame from the webcam
-    success, frame = webcam.read()  
-    
-    if success:
-        #Grabs results after sending it into the network
-        results = detect(frame,net,outputlayers,height,width)
-        
-        #acquires the results of violations in distance 
-        violates = breachsocialdistance(results,scale.get())
-        
-        #If violates is more than 2 it plays an alert audio
-        if len(violates) > 0: 
-            alert(len(violates))
-        
-        #Draws bounding boxes on each frame
-        img = bboxes(results,classes,frame,violates)
-        
-        #Converting Image from BGR to RGBA
-        cv2image = cv2.cvtColor(img, cv2.COLOR_BGR2RGBA)  
-        
-        #Creates an image memory from an object
-        current_image = Image.fromarray(cv2image)
-
-        #Makes Tkinter-compatible photo image  
-        imgtk = ImageTk.PhotoImage(image=current_image)
-
-        #Packs frame onto webcampanel
-        webcampanel.imgtk = imgtk
-        webcampanel.config(image=imgtk)
-
-        #Loops the frame after one millisecond
-        root.after(1, videoloop)
+#Add argument parse and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--input", type=str, default="",
+	help="path to (optional) input video file")
+ap.add_argument("-o", "--output", type=str, default="",
+	help="path to (optional) output video file")
+args = vars(ap.parse_args())
 
 #Loading YOLOv4-tiny configuration file and weights 
 #Initializing network
@@ -65,82 +36,64 @@ layernames = net.getLayerNames()
 #Grabbing Output Layer Names from the Network
 outputlayers = [layernames[index[0]-1] for index in net.getUnconnectedOutLayers()]
 
-# Create a VideoCapture object and read from webcam
-webcam = cv2.VideoCapture(0)
+# Create a VideoCapture object and read from webcam or an input video file
+videostream = cv2.VideoCapture("resources/videos/input/"+args["input"] if args["input"] else 0)
 
-#Get original height and width of videostream
-width = webcam.get(3)
-height = webcam.get(4)
+#Get original height and width of videostream to be modified
+originalheight = videostream.get(4)
+originalwidth = videostream.get(3)
+modw = originalwidth
+modh = originalheight
 
-#Setting up colors for the app
-colors = ("","#8155ba","#008180","#e43d40","#2ed162")
+resize = False
+if (originalwidth > 1100):
+  modw = 1100
+  modh = (int)(originalheight * modw / originalwidth)
+  resize = True
 
-#Intializing our app
-root = Tk()
-root.title("Social Distance Detector")
-root.configure(bg = "black")
+#Frame writer to save video is set to none
+writer = None
 
-#Frame to hold heading
-frame1 = Frame(root, background = colors[2])
-headline = Label(frame1, text = "Social Distance Detector", font = ("times new roman", 28, "bold"), bg = "black", fg = "white", relief = RIDGE)
+# Read until video is completed
+while True:
 
-# Adding the Logo Image
-image = Image.open("stuff/detector.png")
-resize_image = image.resize((384, 216))
-photo = ImageTk.PhotoImage(resize_image)
-photo_label = Label (image=photo)
+  # Capture frame-by-frame
+  cap,frame = videostream.read()
 
-#Packing the Social Distance Title Frame
-frame1.pack(padx = 10 , pady = 10)
-headline.pack(padx = 1.5, pady = 3)
+  if  resize:
+    frame = cv2.resize(frame,(modw,modh),interpolation=cv2.INTER_AREA)
 
-# Packing the Logo Label
-photo_label.pack(padx = 10 , pady = 10)
+  #Grabs results after sending it into the network
+  results = detect(frame,net,outputlayers,modh,modw)
+  
+  #acquires the results of violations in distance 
+  violations=breachsocialdistance(results,violatedistance=75)
 
-#Setting panel for webcam feed
-webcampanel = Label(root,bg = colors[1]) 
-root.config(cursor = "arrow")
+  #Draws bounding boxes on each frame 
+  frame = bboxes(results,classes,frame,violations)
+ 
+  # Display the resulting frame
+  cv2.imshow('Frame', frame)
+   
+  # Press q on keyboard to  exit
+  if cv2.waitKey(1) & 0xFF == ord('q'):
+    break
 
-#Setting Scale to manually change the violate distance
-scale = IntVar()
-violatescale = Scale(root, variable = scale, from_= 25, to = 500, orient = HORIZONTAL, activebackground = colors[3], sliderlength = 15, width = 10, troughcolor = colors[2], length = 500)
+	# if an output video file path has been supplied and the video
+	# writer has not been initialized, do so now
+  if args["output"] != "" and writer is None:
+		# initialize our video writer
+	  fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+	  writer = cv2.VideoWriter("resources/videos/output/"+args["output"], fourcc, 20,
+			(frame.shape[1], frame.shape[0]), True)
+	# if the video writer is not None, write the frame to the output
+	# video file
+  if writer is not None:
+	  writer.write(frame)
 
-#Initially safe distance is set at 75 pixels
-scale.set(75)
-
-#Frame for the comment
-frame2 = Frame(root, background = colors[2])
-comment = Label(frame2, text = "Adjust the safe distance", font = ("Bahnschrift", 15, "bold"), bg = "black", fg = "white", relief = SUNKEN, borderwidth = 2)
-comment.pack(padx = 1.5, pady = 5)
-
-#To Pack the program after user clicks start webcam
-def starteverything():
-    webcampanel.pack(padx = 20, pady = 10)
-    violatescale.pack(anchor = CENTER, expand = True,padx = 5)
-    frame2.pack(padx = 2 , pady = 10)
-    videoloop()
-    startwebcambutton.pack_forget()
-    photo_label.pack_forget()
-
-#Button to start the program
-startwebcambutton = Button(root, text = "Start Webcam", font = ("Bahnschrift", 15, "bold"), activebackground = colors[4], activeforeground = "black", bg = "grey", fg = "black", relief = RAISED,command = lambda : starteverything())
-startwebcambutton.pack(padx=10, pady=10)
-
-disable_time = 10
-
-#Alert Audio function that plays an alert audio after every 10 seconds in case of continuous violation
-def alert(violations,stamp = [time.time() - disable_time]):
-    if time.time() - stamp[0] <= disable_time:
-        return
-    #Plays alert audio
-    playsound('stuff/alertaudio.mp3',block=False)
-
-    #Adds Log to file violationlog.csv
-    addtolog(violations)
-    stamp[0] = time.time()
-
-#Running our app loop
-root.mainloop()
-
-webcam.release()
+# When everything done, release 
+# the video capture object
+videostream.release()
+   
+# Closes all the frames
 cv2.destroyAllWindows()
