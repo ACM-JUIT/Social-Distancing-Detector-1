@@ -7,7 +7,11 @@ Social distancing in Real-Time using live video stream/IP camera in OpenCV.
 
 Input      |  Output
 :-------------------------:|:-------------------------:
+<<<<<<< HEAD
 ![Input](resources\input.gif? "Input")  |  ![Output](resources\output.gif? "Output")
+=======
+![Input](resources/input.gif "Input")  |  ![Output](resources/output.gif "Output")
+>>>>>>> 399732c6d704560b10b774e41b49391dff607cc7
 
 ---
 ## Features

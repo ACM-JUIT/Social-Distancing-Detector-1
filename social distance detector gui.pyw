@@ -79,6 +79,8 @@ colors = ("","#8155ba","#008180","#e43d40","#2ed162")
 root = Tk()
 root.title("Social Distance Detector")
 root.configure(bg = "black")
+photo = PhotoImage(file = "resources/logo.png")
+root.iconphoto(False, photo)
 
 #Frame to hold heading
 frame1 = Frame(root, background = colors[2])
