@@ -40,6 +40,4 @@ $ python social distance detector gui.pyw
 ```
 </br>
 
-
-
-
+---
