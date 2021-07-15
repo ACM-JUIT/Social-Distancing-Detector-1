@@ -11,8 +11,8 @@ Input      |  Output
 
 ---
 ## Features
-- Accept feed from live cam.
-- counting the number of people in real-time.
+- Accept feed from live cam, IP camera and custom video input.
+- Counting the number of people in real-time.
 - Sending an alert(audio) if the people are way over the 
    social distancing limits.
 - Safe distance entered by the user (GUI)
