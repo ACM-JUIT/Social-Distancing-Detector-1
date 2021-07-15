@@ -79,13 +79,15 @@ colors = ("","#8155ba","#008180","#e43d40","#2ed162")
 root = Tk()
 root.title("Social Distance Detector")
 root.configure(bg = "black")
+photo = PhotoImage(file = "resources/logo.png")
+root.iconphoto(False, photo)
 
 #Frame to hold heading
 frame1 = Frame(root, background = colors[2])
 headline = Label(frame1, text = "Social Distance Detector", font = ("times new roman", 28, "bold"), bg = "black", fg = "white", relief = RIDGE)
 
 # Adding the Logo Image
-image = Image.open("resources/detector.png")
+image = Image.open("resources/intro.png")
 resize_image = image.resize((384, 216))
 photo = ImageTk.PhotoImage(resize_image)
 photo_label = Label (image=photo)
