@@ -15,7 +15,31 @@ Input      |  Output
 - Counting the number of people in real-time.
 - Sending an alert(audio) if the people are way over the 
    social distancing limits.
-- Safe distance entered by the user (GUI)
-- Detect humans in the frame with yolov4
+- Safe distance entered by the user (GUI).
+- Detect humans in the frame with yolov4.
 - Stores violations in a csv file.
+
+---
+## Setup
+💻 Install the dependencies on command line:
+
+```sh
+$ pip install -r requirement.txt
+```
+
+💻 To run the program on command line:
+
+```sh
+$ python social distance detector.pyw
+```
+
+💻 To run the GUI on command line:
+
+```sh
+$ python social distance detector gui.pyw
+```
+</br>
+
+
+
 
