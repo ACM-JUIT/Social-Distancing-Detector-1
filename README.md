@@ -19,3 +19,27 @@ Input      |  Output
 - Detect humans in the frame with yolov4
 - Stores violations in a csv file.
 
+---
+## Setup
+💻 Install the dependencies on command line:
+
+```sh
+$ pip install -r requirement.txt
+```
+
+💻 To run the program on command line:
+
+```sh
+$ python social distance detector.pyw
+```
+
+💻 To run the GUI on command line:
+
+```sh
+$ python social distance detector gui.pyw
+```
+</br>
+
+---
+
+
